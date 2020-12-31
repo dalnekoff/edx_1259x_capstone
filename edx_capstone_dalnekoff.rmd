@@ -50,12 +50,7 @@ Having established a goal and a starting dataset it was time to dive in on some 
 # Methods/Analysis
 As described above, the dataset obtained from Kaggle was loaded to r studio, and then analysis, cleansing and enhancing steps were taken to further enrich and optimize this data for the predictive modeling challenge.  In the following section we will discuss several aspects of the data which were realised during the discovery and data cleaning stages.
 
-	The mean popularity score of the observations is 31.43, with a standard deviation of 21.83
-	
-	```
-	print(paste('Mean Popularity:' , floor(mean(data$popularity))))
-	print(paste('Standard Error:' , floor(sd(data$popularity))))
-	```
+The mean popularity score of the observations is 31.43, with a standard deviation of 21.83
 
 One immediate observation was that more recent songs tend to be more popular.  A simple boxplot of release year and popularity shows the mean popularity increasing over time.   However, we have no way to go back in time and release a song in a prior year.  Consequently it doesn't seem like this feature should be considered for building a predictive model.  It is interesting to note that 2020 had some songs with very low popularity compared to the trend of higher values in more recent years...this is yet another indicator of the type of year 2020 has been! 
 
@@ -64,7 +59,7 @@ One immediate observation was that more recent songs tend to be more popular.  A
 To support the classification approach (which we will discuss later), I created a feature which categorized a song based on the popularity.  I labeled this feature “popularity_group”, and defined it based on the observation’s popularity score from the original data.
 
 * Popularity Group
-	+ 0-50th Percentile = Low
+	+ >0 to 50th Percentile = Low
 	+ >50th to 90th Percentile =Medium
 	+ >90th to 99th Percentile = High
 	+ >99th Percentile = Hits
@@ -91,9 +86,7 @@ There are some observable patterns between features in the data and the populari
 
 ### It turns out we also like songs that are explicit!
 
-```
-boxplot(popularity~explicit, data = data)
-```
+![](explicit_popularity.png)
 
 
 
@@ -106,26 +99,26 @@ The baseline data was split into two populations, with 90% reserved for training
 For parameter tuning, I ran several different sets of parameters through the model using the caret package.  This allowed an easy implementation to run different iterations of the model across the combinations of tuning parameters to find the parameters which minimize RMSE (classification) or maximize Accuracy (regression).  To avoid over-fitting, 10 repetitions of 10-fold cross validation was applied via the trControl parameter.  To balance the cost of processing time with the desire to run various combinations of tuning parameters through the model I worked through a few iterations of tuning parameters at a time in some cases.   This was also done because at times the stored model size would crash r / r studio once too many parameter and iterations were included and the model size became too large.  With each run a visual of the parameter performance relative to each other was reviewed to understand the impact some of the parameters would have, and then these would be adjusted a bit and re-run.  The details are all presented in the source code, but in general this included the following parameter ranges:
 
 * gamLoess
-+ span = seq(.01, .5, .05)
-+ degree = 1
+  + span = seq(.01, .5, .05)
+  + degree = 1
 Note: It appears there is a bug in the caret package when tuning gamLoess that triggers an error when tuning with degree = 2
 
 * svmLinear3
-+ cost = seq(.01, .5, .05)
-+ Loss = c(1,2,3)
+  + cost = seq(.01, .5, .05)
+  + Loss = c(1,2,3)
 
 * pls
-+ ncomp = 3, 10, 30, 50, 100, 10000, 500000
+  + ncomp = 3, 10, 30, 50, 100, 10000, 500000
 
 I allowed the models to train for a considerable amount of time (during which time I researched and learned about adding verboseIter = TRUE to my trainingControl matrix to get an idea on monitoring training progression).  During this time, it was evident that model tuning could take a tremendous amount of time and processing power if I wanted to expand this over a large range of tuning parameter values.  On a few occasions I had to abort training due to my laptop rebooting, r crashing, or other technological challenges.  In an ideal scenario this could have run in a highly performant environment and in one complete run.  Ultimately, I saw minimal variance in several of the final tuning runs and the final model parameters used were as follows:
 
 * gamLoess: 
-+ classification: span = .01, degree = 1
-+ regression: span = .11, degree = 1
+  + classification: span = .01, degree = 1
+  + regression: span = .11, degree = 1
 
 * svmLinear3:
-+ classification: cost = .06, Loss = 2
-+ regression: cost = .41, Loss = 2
+  + classification: cost = .06, Loss = 2
+  + regression: cost = .41, Loss = 2
 
 SVM training took a considerable amount of time to run given such a massive parameter range.  I can considerably improve the tuning time here with some pre-optimization of the parameter values before running the full training with 10 repetitions of 10-fold cross validation.  This full training run took nearly a full weekend to run.  
 
@@ -134,8 +127,8 @@ The tuning parameter performance was reviewed with a plot of the parameters and 
 ![](svmLinear_tuning.png)
 
 * pls:
-+ classification: ncomp = 25
-+ regression: ncomp = 25
+  + classification: ncomp = 25
+  + regression: ncomp = 25
 
 For pls tuning I attempted to run and then review a few iterations of the model and compared the RMSE, Accuracy scores, and used the function summary(<model>) to review the point where the full variance explanation was achieved.  Assuming I was interpreting the results and output correctly, in review and testing across multiple scenarios this was at 25 components for both the regression and classification training runs.  In a different use case or scenario where the dimensionality is vast, we would obviously choose a cutoff where performance vs training time has a reasonable balance, but in this case the training time is not prohibitive to include enough components to cover the full variance explanation.
 
