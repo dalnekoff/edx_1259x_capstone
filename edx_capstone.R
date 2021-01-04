@@ -1,5 +1,6 @@
 #HarvardX: PH125.9x Data Science Capstone
 #ddalnekoff 
+#https://github.com/dalnekoff/edx_1259x_capstone
 
 
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
@@ -10,7 +11,7 @@ if(!require(igraph)) install.packages("igraph", repos = "http://cran.us.r-projec
 #if(!require(kknn)) install.packages("kknn", repos = "http://cran.us.r-project.org")
 if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
 #if(!require(gbm)) install.packages("gbm", repos = "http://cran.us.r-project.org")
-if(!require(matrixstats)) install.packages("matrixStats", repos = "http://cran.us.r-project.org")
+#if(!require(matrixstats)) install.packages("matrixStats", repos = "http://cran.us.r-project.org")
 if(!require(gam)) install.packages("gam", repos = "http://cran.us.r-project.org")
 #if(!require(splines)) install.packages("splines", repos = "http://cran.us.r-project.org")
 if(!require(foreach)) install.packages("foreach", repos = "http://cran.us.r-project.org")
@@ -31,8 +32,7 @@ data <- read_csv("https://raw.githubusercontent.com/dalnekoff/edx_1259x_capstone
 
 
 #load data w genre from local repo
-#
-data_w_genres <- read_csv("~/R/capstone/data_w_genres.csv")
+#data_w_genres <- read_csv("~/R/capstone/data_w_genres.csv")
 
 #load data w/ genres from github repo
 data_w_genres <- read_csv("https://raw.githubusercontent.com/dalnekoff/edx_1259x_capstone/master/data_w_genres.csv")
