@@ -375,9 +375,15 @@ pls_tune_50 <- expand.grid(
 
 #for gamLoess tuning, I attempted to run groups of several different sets of testing parameters to see if there was somewhere that a significant improvement was found.  Across multiple runs of different parameters, all of the model runs land close to one another in terms of performance.
 
-gamloess_tune <- expand.grid(
+training_gamloess_tune <- expand.grid(
   #span = c(.01 , .1 , .5),
   span = seq(.01, .5, .05),
+  degree = 1
+)
+
+gamloess_tune <- expand.grid(
+  #span = c(.01 , .1 , .5),
+  span = .01,
   degree = 1
 )
 
@@ -470,7 +476,6 @@ c_train_gamLoess <-
   train(popularity_group ~ ., method = "gamLoess", data = c_train_data_scaled, trControl = fitControl, verbose = TRUE, tuneGrid = gamloess_tune)
 
 c_train_gamLoess$results$Accuracy
-confusionMatrix(c_gamLoess_results, c_test_data_scaled$popularity_group)
 
 
 #quick review of all three algorithms across regression and classification approaches, and the performance of the best tuning parameter sets
@@ -486,6 +491,7 @@ c_train_pls$bestTune
 c_train_pls$results$Accuracy
 r_train_pls$results$RMSE
 r_train_pls$results$RMSE[which.min(r_train_pls$results$RMSE)]
+
 c_train_gamLoess$results$Accuracy
 c_train_gamLoess$results$Accuracy[which.max(c_train_gamLoess$results$Accuracy)]
 
@@ -512,13 +518,13 @@ cm_pls <- confusionMatrix(c_pls_results, c_test_data_scaled$popularity_group)
 cm_svmLinear <- confusionMatrix(c_svmLinear3_results, c_test_data_scaled$popularity_group)
 cm_gamLoess <- confusionMatrix(c_gamLoess_results, c_test_data_scaled$popularity_group)
 
-cm_pls
-cm_svmLinear
-cm_gamLoess
+cm_pls$table
+cm_svmLinear$table
+cm_gamLoess$table
 
-saveas(cm_pls, 'cm_pls.png');
-saveas(cm_svmLinear, 'cm_svmLinear.png');
-saveas(cm_gamLoess, 'cm_gamLoess.png');
+plot(cm_svmLinear$table, main = "SVM Classification Confusion Matrix")
+plot(cm_pls$table, main = "PLS Classification Confusion Matrix")
+
 
 
 
@@ -542,7 +548,7 @@ c_test_data_scaled_with_preds %>% filter(popularity_group == "Hit")
 
 #let's dive further into the pls regression results
 temp_hits_pls <- r_test_data_scaled_with_preds %>% filter(popularity >= 77 | r_pls >= 77)
-plot(temp_hits_pls$popularity, temp_hits_pls$r_pls)
+plot(temp_hits_pls$popularity, temp_hits_pls$r_pls, main = "PLS Regression Model Results", xlab = "Actual Hits Popularity", ylab = "Predicted Hits Popularity")
 RMSE(temp_hits_pls$r_pls,temp_hits_pls$popularity)
 sd(temp_hits_pls$r_pls)
 
@@ -550,14 +556,14 @@ sd(temp_hits_pls$r_pls)
 #let's dive further into the gamLoess regression results
 RMSE(r_gamLoess_results, r_test_data_scaled$popularity)
 temp_hits_gamLoess <- r_test_data_scaled_with_preds %>% filter(popularity >= 77 | r_gamLoess >= 77)
-plot(temp_hits_gamLoess$popularity, temp_hits_gamLoess$r_gamLoess)
+plot(temp_hits_gamLoess$popularity, temp_hits_gamLoess$r_gamLoess, main = "gamLoess Regression Model Results", xlab = "Actual Hits Popularity", ylab = "Predicted Hits Popularity")
 RMSE(temp_hits_gamLoess$popularity, temp_hits_gamLoess$r_gamLoess)
 sd(temp_hits_gamLoess$r_gamLoess)
 
 #let's dive further into the svm regression results
 RMSE(r_svmLinear3_results, r_test_data_scaled$popularity)
 temp_hits_svmLinear3 <- r_test_data_scaled_with_preds %>% filter(popularity >= 77 | r_svmLinear3 >= 77)
-plot(temp_hits_svmLinear3$popularity, temp_hits_svmLinear3$r_svm )
+plot(temp_hits_svmLinear3$popularity, temp_hits_svmLinear3$r_svmLinear3 )
 RMSE(temp_hits_svmLinear3$popularity, temp_hits_svmLinear3$r_gamLoess)
 sd(temp_hits_svmLinear3$r_svmLinear3)
 
