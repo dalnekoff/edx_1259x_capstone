@@ -19,16 +19,29 @@ if(!require(modelr)) install.packages("modelr", repos = "http://cran.us.r-projec
 
 
 
-data <- read_csv("~/R/capstone/data.csv")
+#load data from local repo
+#data <- read_csv("~/R/capstone/data.csv")
+
+#load data from github repo
+data <- read_csv("https://raw.githubusercontent.com/dalnekoff/edx_1259x_capstone/master/data.csv")
+
 #data_artist <- read_csv("~/R/capstone/data_by_artist.csv")
 #data_genres <- read_csv("~/R/capstone/data_by_genres.csv")
 #data_year <- read_csv("~/R/capstone/data_by_year.csv")
+
+
+#load data w genre from local repo
+#
 data_w_genres <- read_csv("~/R/capstone/data_w_genres.csv")
+
+#load data w/ genres from github repo
+data_w_genres <- read_csv("https://raw.githubusercontent.com/dalnekoff/edx_1259x_capstone/master/data_w_genres.csv")
+
 
 #Perform some data cleaning to create a new column with the square brackets and single quotes removed from the list of artists.
 data <- data %>% mutate( artists = gsub("\\[|\\]", "", artists))
-data <- data %>% mutate( artists = gsub("\\'|\\'", "", artist_clean)) 
-data <- data %>% mutate( artists = gsub("\\|\\'", "", artist_clean))
+#data <- data %>% mutate( artists = gsub("\\'|\\'", "", artist_clean)) 
+#data <- data %>% mutate( artists = gsub("\\|\\'", "", artist_clean))
 #head(working_data)
 
 #let's find and review any NA's in the data
