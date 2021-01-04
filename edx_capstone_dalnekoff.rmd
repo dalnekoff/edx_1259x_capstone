@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Overview
 
 In the song “You Wanted a Hit” by LCD Soundsystem, the lyrics seem to hint at a list of song requirements imposed upon the artist.  Obviously, publishing companies and executives want their artists to produce hit songs so that they can enjoy the successful financial returns that would generate.  For the artist, there is more to the equation than just a profit motive; they likely want an opportunity to perform, to share their story and provide something that the audience enjoys, relates or feels some connection to.  The scope of this project is focused on the former perspective and goal of creating a hit song.  In the aforementioned lyrics, there seem to be some specific things the artist is requested to include:
+
 > “You wanted a hit….
 > …You wanted it tough…
 > …You wanted it lush…
@@ -23,8 +24,7 @@ While only a few may know the truth behind the list of requests, and if it is ve
 
 A quick search through some Kaggle (http://www.kaggle.com) content led me to the “Spotify Dataset 1921-2020, 160k+ Tracks” dataset.  This dataset has been graciously compiled and made available by Yamac Eren Ay.  The dataset was developed through the use of Spotify APIs and consists of several datasets, including one which has a list of over 170,000 songs released between 1921 and 2020.  The data includes several attributes which are provided by Spotify and include things like the “acousticness”, the “tempo”, and then “loudness” of a given song.  In addition to other features, each song has a “popularity” score, which is an indicator of the song’s popularity between 0 and 100.  The goal of our data science challenge here is to develop a model to predict the popularity of a song, given the attributes we know (which are provided via Spotify). 
 
-[Link to source Kaggle page on data - "Spotify Dataset 1921-2020, 160k+ Tracks"]
-(https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks)
+Link to source Kaggle page on data - "Spotify Dataset 1921-2020, 160k+ Tracks"
 
 https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks
 
