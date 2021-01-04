@@ -2,7 +2,9 @@
 title: 'EDX Capstone: You Wanted a Hit'
 author: "Daniel Dalnekoff"
 date: "12/30/2020"
-output: pdf_document
+output: 
+  pdf_document:
+    pandoc_args: ["--extract-media", "."]
 ---
 
 ```{r setup, include=FALSE}
@@ -60,7 +62,7 @@ The mean popularity score of the observations is 31.43, with a standard deviatio
 
 One immediate observation was that more recent songs tend to be more popular.  A simple boxplot of release year and popularity shows the mean popularity increasing over time.   However, we have no way to go back in time and release a song in a prior year.  Consequently it doesn't seem like this feature should be considered for building a predictive model.  It is interesting to note that 2020 had some songs with very low popularity compared to the trend of higher values in more recent years...this is yet another indicator of the type of year 2020 has been! 
 
-![](boxplot_popularity_releaseyear.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/boxplot_popularity_releaseyear.png?raw=true)
 
 To support the classification approach (which we will discuss later), I created a feature which categorized a song based on the popularity.  I labeled this feature “popularity_group”, and defined it based on the observation’s popularity score from the original data.
 
@@ -84,15 +86,15 @@ Artists Effect was also developed in a manner similar to the hits and song count
 There are some observable patterns between features in the data and the popularity score or group.  If we wanted to really read into this, we might make some interesting observations or assumptions about the musical tastes of our society!  In general, it appears we really like loud songs that we can dance along to.
 
 ### Popularity and Loudness
-![](plot_loudness_popularity.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/plot_loudness_popularity.png?raw=true)
 
 ### Popularity and Danceability
 
-![](plot_popularity_danceability.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/plot_popularity_danceability.png?raw=true)
 
 ### It turns out we also like songs that are explicit!
 
-![](explicit_popularity.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/explicit_popularity.png?raw=true)
 
 
 
@@ -131,7 +133,7 @@ SVM training took a considerable amount of time to run given such a massive para
 
 The tuning parameter performance was reviewed with a plot of the parameters and results, and by reviewing the "bestTune" output from the trained models - svmLinear3 Regression tuning example:
 
-![](svmLinear_tuning.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/svmLinear_tuning.png?raw=true)
 
 * pls:
   + classification: ncomp = 25
@@ -145,14 +147,14 @@ To review the final algorithm performance, each model was used to predict the po
 ## PLS Classification
 While tuning the model, the metric leveraged was Accuracy.  During model training, the overall Accuracy score produced was .767.  I used the predict function to generate the predictions for the test data and then compared these to the actual results in the test data.  Although the accuracy score makes us think the model potentially performs well, the confusion matrix tells us a more nuanced story.  It seems that the high prevalence of low and medium popularity songs in the data makes it hard to identify a “hit”.  In the case of the PLS classification model, the algorithm failed to predict any hits in the test population.  From a review of the data, we know this is not true (there are hits in the test data).  The model is not sensitive enough to identify the true positives in the hit category.  As I thought about this a bit more, I realized - if we think critically about what we are really training the model to do – not specifically predict a hit, but predict the popularity group, the overall performance is better than what would be expected from a random guess.  Furthermore, we should probably adjust the model tuning or dataset to better support the task at hand of trying to identify a hit song.  One approach would be to change the popularity group to a binary indicator of “hit” (true/false) and then rebuilding the model.
 
-![](cm_pls.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/cm_pls.png?raw=true)
 
 
 
 ## PLS Regression
 The pls model was tuned to optimize the RMSE (residual mean squared error) of the predicted popularity score compared to the actual popularity of each observation.  When run against the train and test data the RMSE result was approx. 9.26.  This score indicates that on a 100 point popularity scale, we can generally predict the popularity of a song within 10 “popularity units”.  I wanted to then understand if the model could predict or identify the “hits”.  We know from an earlier review of the data, the minimum popularity of a hit was 77, so I did a review for observations with a popularity score of 77 or above OR a predicted popularity score of 77 or above to compare the model performance for just this population.  For this segment of the observations, the performance had decreased considerably, as our RMSE increased from 9.26 to 17.56 with a standard error of 9.86.  Some summary visuals below also show the performance of this model for the overall population, and for just the subset of actual or predicted hits.  This approach does provide better results compared to randomly guessing the popularity or assuming the population mean of 31.43 (note the standard error on the population popularity is 21.83).    
 
-![](regression_pls_hits_preds.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/regression_pls_hits_preds.png?raw=true)
 
 ## gamLoess Classification
 While tuning the model, the metric leveraged was Accuracy.  During model training, the Accuracy score produced for the gamLoess model was 0.043.  The confusion matrix showed that this model placed every obserevation into the High and Hit categories, and nothing into the Low or Medium popularity groups.  Obviously, this model is not viable for use as-is.  Additional work must be done to understand what is causing this and attempt to re-engineer the way the data is structured or formatted, re-work the tuning parameters or make other adjustments to see if this could improve the model.  It is also possible gamLoess for classification is not appropriate to solve this challenge.  
@@ -160,7 +162,7 @@ While tuning the model, the metric leveraged was Accuracy.  During model trainin
 ## gamLoess Regression
 The gamLoess model was tuned to optimize the RMSE (residual mean squared error) of the popularity, and when run against the train data using 10 repetitions of 10-fold cross validation the best tune results obtained an RMSE of 9.19.  When run against the test data the RMSE result was 9.12.  This score indicates that on a 100 point popularity scale, we can generally predict the popularity of a song within 9 points, which is better than just guessing or taking the population mean.  Similar to how I looked at the PLS model performance for just the hits, I filtered to only include observations where the actual or predicted popularity was greater than or equal to 77.  For this population the RMSE was 17.51, with a standard error of 9.89.  The performance here is roughly in line with the PLS regression model, providing a better alternative to a random guess or using the population mean.
 
-![](regression_gamLoess_hits_preds.png)
+![](https://github.com/dalnekoff/edx_1259x_capstone/blob/master/regression_gamLoess_hits_preds.png?raw=true)
 
 
 ## Support Vector Machine Classification
